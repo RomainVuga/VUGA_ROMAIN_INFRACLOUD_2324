@@ -1,0 +1,83 @@
+<html>
+<head>
+    <title>Visual Clock</title>
+    <style>
+        #clock {
+            width: 200px;
+            height: 200px;
+            border: 5px solid #333;
+            border-radius: 50%;
+            position: relative;
+        }
+        .hand {
+            position: absolute;
+            background: #333;
+            transform-origin: 50% 100%;
+            width: 2px;
+            height: 100px;
+            top: 10px;
+            left: 99px;
+        }
+        .hour {
+            background: #333;
+            transform-origin: 50% 100%;
+            width: 4px;
+            height: 70px;
+            top: 40px;
+            left: 98px;
+        }
+        .minute {
+            background: #333;
+            transform-origin: 50% 100%;
+            width: 2px;
+            height: 85px;
+            top: 25px;
+            left: 99px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Visual Clock</h1>
+    <div id="clock"></div>
+
+    <script>
+        function updateClock() {
+            const now = new Date();
+            const hour = now.getHours() % 12;
+            const minute = now.getMinutes();
+            const second = now.getSeconds();
+
+            const secondDegree = (360 / 60) * second;
+            const minuteDegree = (360 / 60) * minute + (6 / 60) * second;
+            const hourDegree = (360 / 12) * hour + (30 / 60) * minute;
+
+            const secondHand = document.querySelector('.second');
+            const minuteHand = document.querySelector('.minute');
+            const hourHand = document.querySelector('.hour');
+
+            secondHand.style.transform = `rotate(${secondDegree}deg)`;
+            minuteHand.style.transform = `rotate(${minuteDegree}deg)`;
+            hourHand.style.transform = `rotate(${hourDegree}deg)`;
+        }
+
+        // Create clock hands
+        const secondHand = document.createElement('div');
+        const minuteHand = document.createElement('div');
+        const hourHand = document.createElement('div');
+
+        secondHand.className = 'hand second';
+        minuteHand.className = 'hand minute';
+        hourHand.className = 'hand hour';
+
+        document.getElementById('clock').appendChild(secondHand);
+        document.getElementById('clock').appendChild(minuteHand);
+        document.getElementById('clock').appendChild(hourHand);
+
+        // Update the clock every second
+        setInterval(updateClock, 1000);
+
+        // Initial call to set the clock
+        updateClock();
+    </script>
+</body>
+</html>
