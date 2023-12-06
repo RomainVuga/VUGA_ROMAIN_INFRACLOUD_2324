@@ -38,11 +38,12 @@ docker build -t "$DOCKER_IMAGE" .
 log "Docker image '$DOCKER_IMAGE' built successfully."
 
 # Run Docker container
+log "Starting Microservice..."
 docker run --name "$DOCKER_CONTAINER" -d -p 5555:5555 "$DOCKER_IMAGE"
-log "Docker container '$DOCKER_CONTAINER' is running."
 
 # Wait for a while to let the app start
 sleep 10
+log "Docker container '$DOCKER_CONTAINER' is running."
 
 # Test the running app using curl
 CURL_RESULT=$(curl -s http://localhost:5555)
