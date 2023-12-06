@@ -4,12 +4,12 @@ from flask import render_template
 from flask import redirect
 from flask import url_for
 from flask import flash
+import sqlite3
 import datetime
 import folium
 
 microweb_app = Flask(__name__)
-
-users = {'user1': 'password1', 'user2': 'password2'}
+app.secret_key = '\xf0?a\x9a\\\xff\xd4;\x0c\xcbHi'
 
 @microweb_app.route("/")
 def main():
@@ -33,26 +33,37 @@ def map():
 def time():
     return render_template("time.html")
 
+@microweb_app.route('/signup', methods=['POST'])
+def signup():
+    username = request.form['username']
+    password = request.form['password']
+
+    conn = sqlite3.connect('users.db')
+    cursor = conn.cursor()
+    cursor.execute("INSERT INTO users (username, password) VALUES (?, ?)", (username, password))
+    conn.commit()
+    conn.close()
+
+    flash('Account created successfully! Please log in.', 'success')
+    return redirect(url_for('main'))
+
 @microweb_app.route('/login', methods=['POST'])
 def login():
     username = request.form['username']
     password = request.form['password']
 
-    if username in users and users[username] == password:
-        return f'Welcome, {username}!'
-    else:
-        return 'Invalid login credentials. <a href="/">Try again</a>'
+    conn = sqlite3.connect('users.db')
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM users WHERE username=?", (username,))
+    user = cursor.fetchone()
+    conn.close()
 
-@microweb_app.route('/create', methods=['POST'])
-def signup():
-    username = request.form['username']
-    password = request.form['password']
-
-    if username in users:
-        return 'Username already exists. <a href="/">Try again</a>'
+    if user and(user[2], password):
+        flash('Login successful!', 'success')
     else:
-        users[username] = password
-        return 'Account created successfully. <a href="/">Login</a>'
+        flash('Login failed. Please check your username and password.', 'danger')
+
+    return redirect(url_for('main'))
 
 if __name__ == "__main__":
     microweb_app.run(host="127.0.0.1", port=5555)
